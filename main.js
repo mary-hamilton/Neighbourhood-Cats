@@ -1,6 +1,6 @@
 import './bootstrap.css';
 import './style.css';
-import  {checkNameValidity} from "./catName.js";
+import {checkNameValidity} from "./catName.js";
 import {checkFluffinessValidity} from "./fluffiness.js"
 import {checkColourValidity} from "./coatColour.js";
 import {createNewCat} from "./createCat.js";
@@ -23,43 +23,55 @@ form.onsubmit = (event) => {
     displayValidity(fluffiness);
 
     let validated = true;
-    if (catName.getIssues().length > 0 || coatColour.getIssues().length  > 0 || fluffiness.getIssues().length > 0) {
+    if (catName.getIssues().length > 0 || coatColour.getIssues().length > 0 || fluffiness.getIssues().length > 0) {
         validated = false;
     }
-    console.log(validated)
     if (validated) {
         let newCat = {
             name: catName.getValue(),
             colour: coatColour.getValue(),
             fluffiness: fluffiness.getValue(),
             // friend: friendsInputYes.value,
+        }
+        catArray.push(newCat);
+        printCats();
+
     }
-    catArray.push(newCat);
-    console.log(catArray);
-}
 }
 // Get and validate the cat name
 export const catName = {
     input: document.getElementById('cat-name'),
     feedback: document.getElementById('name-feedback'),
-    getValue() { return this.input.value },
-    getIssues() { return checkNameValidity(this.getValue(), catArray)},
+    getValue() {
+        return this.input.value
+    },
+    getIssues() {
+        return checkNameValidity(this.getValue(), catArray)
+    },
 };
 
 // Get and validate the cat colour
 export const coatColour = {
     input: document.getElementById('coat-colour'),
     feedback: document.getElementById('colour-feedback'),
-    getValue() { return this.input.value },
-    getIssues() { return checkColourValidity(this.getValue())},
+    getValue() {
+        return this.input.value
+    },
+    getIssues() {
+        return checkColourValidity(this.getValue())
+    },
 };
 
 // Get and validate the cat fluffiness
 export const fluffiness = {
     input: document.getElementById('fluffiness'),
     feedback: document.getElementById('fluffiness-feedback'),
-    getValue() { return this.input.value },
-    getIssues() { return checkFluffinessValidity(this.getValue())},
+    getValue() {
+        return this.input.value
+    },
+    getIssues() {
+        return checkFluffinessValidity(this.getValue())
+    },
 };
 
 // Get and validate the friend value I HAVE NOT DONE THIS YET
@@ -78,5 +90,34 @@ export const displayValidity = (formGroup) => {
     })
     issueElements.forEach((el) => formGroup.feedback.appendChild(el));
 }
+
+// create and display the cat cards
+
+export const printCats = () => {
+    const catCardHolder = document.getElementById("cat-card-holder")
+    catCardHolder.replaceChildren();
+    let catCards = catArray.map((cat) => {
+        let catEl = document.createElement("div");
+        catEl.classList.add("cat-cards");
+        let catName = document.createElement("p");
+        catName.textContent = cat.name;
+        let catColour = document.createElement("p");
+        catColour.textContent = cat.colour;
+        let catFluffiness = document.createElement("p");
+        catFluffiness.textContent = cat.fluffiness;
+        let deleteCat = document.createElement("button");
+        deleteCat.textContent = "Delete Cat";
+        deleteCat.onclick = () => {
+            deleteCat.parentElement.remove();
+            catArray = catArray.filter((value) => value.name !== cat.name);
+        }
+        catEl.append(catName, catColour, catFluffiness, deleteCat);
+        return catEl;
+    })
+
+    catCards.forEach((el) => catCardHolder.appendChild(el));
+}
+
+
 
 

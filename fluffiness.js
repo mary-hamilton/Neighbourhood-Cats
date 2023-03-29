@@ -10,6 +10,5 @@ export const checkFluffinessValidity = (fluffiness) => {
  if (!outOfTen(fluffiness)) {
      issues.push("Your fluffiness value must be out of 10!")
  }
- console.log(issues);
  return issues;
 }
