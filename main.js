@@ -25,8 +25,6 @@ form.onsubmit = (event) => {
     displayValidity(coatColour);
     displayValidity(fluffiness);
 
-    retrieveCats();
-
     let validated = true;
     if (catName.getIssues().length > 0 || coatColour.getIssues().length > 0 || fluffiness.getIssues().length > 0) {
         validated = false;
@@ -38,10 +36,16 @@ form.onsubmit = (event) => {
             fluffiness: fluffiness.getValue(),
             // friend: friendsInputYes.value,
         }
+
+        retrieveCats();
+
         catArray.push(newCat);
 
         printCats();
         storeCats();
+    //     clear the inputs
+
+
 
     }
 }
@@ -88,7 +92,7 @@ export const fluffiness = {
 export const displayValidity = (formGroup) => {
     let issues = formGroup.getIssues();
     formGroup.input.classList.remove('is-valid,', 'is-invalid');
-    formGroup.input.classList.add(issues.length === 0 ? 'is-valid' : 'is-invalid');
+    formGroup.input.classList.add(issues.length < 1 ? 'is-valid' : 'is-invalid');
     formGroup.feedback.replaceChildren();
     let issueElements = issues.map((issue) => {
         let issueEl = document.createElement("small");
@@ -128,14 +132,16 @@ export const printCats = () => {
 }
 // Storing the cats
 // Adding to local storage
-
+//
 const storeCats = () => {
+
     localStorage.setItem('Cats',JSON.stringify(catArray));
 }
 
 // Retrieving from local storage
 const retrieveCats = () => {
-    catArray = JSON.parse(localStorage.getItem('Cats'));
+
+    catArray = JSON.parse(localStorage.getItem('Cats')) || [];
 }
 
 // on page load
@@ -143,4 +149,24 @@ const retrieveCats = () => {
 retrieveCats();
 printCats()
 
+// adding delete all cats button
+const killAllCats = () => {
+    localStorage.removeItem('Cats');
+    catArray = [];
+    printCats();
+}
+
+const killAllCatsButton = document.getElementById("kill-all-cats");
+
+killAllCatsButton.onclick = () => {
+    if (confirm("are you sure you want to kill all your cats?")) {
+        killAllCats();
+    }
+}
+
+// // clear the form
+//
+// const clearForm = () => {
+//
+// }
 
