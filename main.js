@@ -5,7 +5,9 @@ import {checkFluffinessValidity} from "./fluffiness.js"
 import {checkColourValidity} from "./coatColour.js";
 import {createNewCat} from "./createCat.js";
 
-const form = document.querySelector("form");
+const form = document.getElementById("cat-creator");
+const main = document.getElementById("main");
+
 
 // Inputs
 
@@ -126,15 +128,27 @@ export const printCats = () => {
         catColour.textContent = "Coat Colour: " + cat.colour;
         let catFluffiness = document.createElement("p");
         catFluffiness.textContent = "Fluffiness: " + cat.fluffiness;
-        let deleteCat = document.createElement("button");
-        deleteCat.textContent = "Delete Cat";
-        deleteCat.onclick = () => {
-            deleteCat.parentElement.remove();
+
+        // create delete button
+        let deleteCatButton = document.createElement("button");
+        deleteCatButton.textContent = "Delete Cat";
+        deleteCatButton.onclick = () => {
+            deleteCatButton.parentElement.remove();
             catArray = catArray.filter((value) => value.name !== cat.name);
-            // must modify the cat array here or it will continue to be stored intact
+            // must modify the cat array here, or it will continue to be stored intact
             storeCats();
         }
-        catEl.append(catName, catColour, catFluffiness, deleteCat);
+
+        // create edit button and edit form
+        let editCatButton = document.createElement("button");
+        editCatButton.textContent = "Edit Cat";
+        editCatButton.onclick = () => {
+            let editForm = createEditForm(cat);
+            main.appendChild(editForm);
+        }
+
+
+        catEl.append(catName, catColour, catFluffiness, editCatButton, deleteCatButton);
         return catEl;
     })
 
@@ -169,6 +183,7 @@ const killAllCats = () => {
 const killAllCatsButton = document.getElementById("kill-all-cats");
 
 killAllCatsButton.onclick = () => {
+    // change this to a modal at some point
     if (confirm("are you sure you want to kill all your cats?")) {
         killAllCats();
     }
@@ -182,8 +197,10 @@ const clearForm = (formGroup) => {
 
 }
 
-// pesudocoding the edit function
-// click edit button
+
+// sketching out the edit function
+
+// click edit button x
 // form pops up populated with the current values
 // we create a new array with the cat we are editing filtered out of it
 // we make our edits and click submit
@@ -193,4 +210,24 @@ const clearForm = (formGroup) => {
 // passed? we create a new cat
 // we delete the old cat from and add our new cat to the original array (at the same index
 // as the old cat ideally)
+// for now I am happy to just get the edit form onto the screen (anywhere);
+// I will try and make it into a proper popup using bootstrap later.
+// Need to work out how to not have 2 edit forms open at once - I think
+// using the modal functionality where if you click off it the form closes
+// would be enough
+
+const createEditForm = (cat) => {
+    let editForm = document.createElement("form");
+    editForm.classList.add("container", "cat-editor");
+    editForm.id = "cat-editor";
+    let placeholder = document.createElement("p");
+    placeholder.textContent = cat.name;
+    editForm.append(placeholder);
+    // have created this edit button; at the moment it still does default behaviour which is to submit the edit form
+    // need to sort this out tomorrow
+    let confirmEditButton = document.createElement("button");
+    confirmEditButton.textContent = "Confirm Edits";
+    editForm.appendChild(confirmEditButton);
+    return editForm;
+}
 
