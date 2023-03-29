@@ -182,3 +182,15 @@ const clearForm = (formGroup) => {
 
 }
 
+// pesudocoding the edit function
+// click edit button
+// form pops up populated with the current values
+// we create a new array with the cat we are editing filtered out of it
+// we make our edits and click submit
+// we run out validation checks using our new array
+// failed? normal validation bootstrap messages; nothing
+// cancelled? form disappears, nothing is changed
+// passed? we create a new cat
+// we delete the old cat from and add our new cat to the original array (at the same index
+// as the old cat ideally)
+
