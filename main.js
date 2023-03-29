@@ -14,13 +14,18 @@ const friendsInputNo = document.getElementById("no");
 
 let catArray = [];
 
+
+
 // submit the fucker
 
 form.onsubmit = (event) => {
     event.preventDefault();
+
     displayValidity(catName);
     displayValidity(coatColour);
     displayValidity(fluffiness);
+
+    retrieveCats();
 
     let validated = true;
     if (catName.getIssues().length > 0 || coatColour.getIssues().length > 0 || fluffiness.getIssues().length > 0) {
@@ -34,7 +39,9 @@ form.onsubmit = (event) => {
             // friend: friendsInputYes.value,
         }
         catArray.push(newCat);
+
         printCats();
+        storeCats();
 
     }
 }
@@ -100,16 +107,18 @@ export const printCats = () => {
         let catEl = document.createElement("div");
         catEl.classList.add("cat-cards");
         let catName = document.createElement("p");
-        catName.textContent = cat.name;
+        catName.textContent = "Cat Name: " + cat.name;
         let catColour = document.createElement("p");
-        catColour.textContent = cat.colour;
+        catColour.textContent = "Coat Colour: " + cat.colour;
         let catFluffiness = document.createElement("p");
-        catFluffiness.textContent = cat.fluffiness;
+        catFluffiness.textContent = "Fluffiness: " + cat.fluffiness;
         let deleteCat = document.createElement("button");
         deleteCat.textContent = "Delete Cat";
         deleteCat.onclick = () => {
             deleteCat.parentElement.remove();
             catArray = catArray.filter((value) => value.name !== cat.name);
+            // must modify the cat array here or it will continue to be stored intact
+            storeCats();
         }
         catEl.append(catName, catColour, catFluffiness, deleteCat);
         return catEl;
@@ -117,7 +126,21 @@ export const printCats = () => {
 
     catCards.forEach((el) => catCardHolder.appendChild(el));
 }
+// Storing the cats
+// Adding to local storage
 
+const storeCats = () => {
+    localStorage.setItem('Cats',JSON.stringify(catArray));
+}
 
+// Retrieving from local storage
+const retrieveCats = () => {
+    catArray = JSON.parse(localStorage.getItem('Cats'));
+}
+
+// on page load
+
+retrieveCats();
+printCats()
 
 
