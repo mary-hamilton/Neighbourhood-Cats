@@ -147,7 +147,6 @@ export const printCats = () => {
             main.appendChild(editForm);
         }
 
-
         catEl.append(catName, catColour, catFluffiness, editCatButton, deleteCatButton);
         return catEl;
     })
@@ -204,8 +203,8 @@ const clearForm = (formGroup) => {
 // form pops up populated with the current values
 // we create a new array with the cat we are editing filtered out of it
 // we make our edits and click submit
-// we run out validation checks using our new array
-// failed? normal validation bootstrap messages; nothing
+// we run our validation checks using our new array
+// failed? normal validation bootstrap messages; nothing is changed
 // cancelled? form disappears, nothing is changed
 // passed? we create a new cat
 // we delete the old cat from and add our new cat to the original array (at the same index
@@ -223,11 +222,13 @@ const createEditForm = (cat) => {
     let placeholder = document.createElement("p");
     placeholder.textContent = cat.name;
     editForm.append(placeholder);
-    // have created this edit button; at the moment it still does default behaviour which is to submit the edit form
-    // need to sort this out tomorrow
     let confirmEditButton = document.createElement("button");
+    confirmEditButton.type = "submit";
     confirmEditButton.textContent = "Confirm Edits";
     editForm.appendChild(confirmEditButton);
+    editForm.onsubmit = (event) => {
+        event.preventDefault();
+    }
     return editForm;
 }
 

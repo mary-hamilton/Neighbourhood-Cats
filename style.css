@@ -7,7 +7,7 @@
     margin: 20px;
 }
 
-#cat-editor {
+.cat-editor {
     background-color: #0dcaf0;
     border: 5px solid black;
     border-radius: 20px;
