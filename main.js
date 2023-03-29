@@ -43,12 +43,19 @@ form.onsubmit = (event) => {
 
         printCats();
         storeCats();
-    //     clear the inputs
 
-
+        //     clear the inputs - also clears the positive validation bootstrap class (you don't need to see
+        //     positive validation if you have successfully submitted)
+        clearForm(catName);
+        clearForm(coatColour);
+        clearForm(fluffiness);
 
     }
+
+
 }
+
+
 // Get and validate the cat name
 export const catName = {
     input: document.getElementById('cat-name'),
@@ -91,8 +98,11 @@ export const fluffiness = {
 
 export const displayValidity = (formGroup) => {
     let issues = formGroup.getIssues();
+    console.log(formGroup.input.classList);
     formGroup.input.classList.remove('is-valid,', 'is-invalid');
+    console.log(formGroup.input.classList);
     formGroup.input.classList.add(issues.length < 1 ? 'is-valid' : 'is-invalid');
+    console.log(formGroup.input.classList);
     formGroup.feedback.replaceChildren();
     let issueElements = issues.map((issue) => {
         let issueEl = document.createElement("small");
@@ -128,7 +138,7 @@ export const printCats = () => {
         return catEl;
     })
 
-    catCards.forEach((el) => catCardHolder.appendChild(el));
+    catCards.forEach((el) => catCardHolder.prepend(el));
 }
 // Storing the cats
 // Adding to local storage
@@ -164,9 +174,11 @@ killAllCatsButton.onclick = () => {
     }
 }
 
-// // clear the form
-//
-// const clearForm = () => {
-//
-// }
+// clear the form after positive submission
+
+const clearForm = (formGroup) => {
+    formGroup.input.value = "";
+    formGroup.input.classList.remove('is-valid');
+
+}
 
