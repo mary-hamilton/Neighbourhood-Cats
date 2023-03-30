@@ -11,9 +11,23 @@
     background-color: #0dcaf0;
     border: 5px solid black;
     border-radius: 20px;
+    padding: 20px;
     z-index: 2;
     position: fixed;
     top: 8vh;
     left: 8vh;
     display: none;
+}
+
+.preview {
+    width: 200px;
+}
+
+#image-preview {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.card-image {
+    width: 400px;
 }
