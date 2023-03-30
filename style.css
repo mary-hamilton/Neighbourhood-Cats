@@ -15,4 +15,5 @@
     position: fixed;
     top: 8vh;
     left: 8vh;
+    display: none;
 }
