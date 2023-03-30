@@ -3,61 +3,21 @@ import './style.css';
 import {checkNameValidity} from "./catName.js";
 import {checkFluffinessValidity} from "./fluffiness.js"
 import {checkColourValidity} from "./coatColour.js";
+
 import {createNewCat} from "./createCat.js";
-
-const form = document.querySelector("form");
-
-// Inputs
-
-const friendsInputYes = document.getElementById("yes");
-const friendsInputNo = document.getElementById("no");
-
-let catArray = [];
+import {addCatToEditForm} from "./addCatToEditForm.js";
+import {editOriginalCat} from "./editOriginalCat.js";
 
 
-
-// submit the fucker
-
-form.onsubmit = (event) => {
-    event.preventDefault();
-
-    displayValidity(catName);
-    displayValidity(coatColour);
-    displayValidity(fluffiness);
-
-    let validated = true;
-    if (catName.getIssues().length > 0 || coatColour.getIssues().length > 0 || fluffiness.getIssues().length > 0) {
-        validated = false;
-    }
-    if (validated) {
-        let newCat = {
-            name: catName.getValue(),
-            colour: coatColour.getValue(),
-            fluffiness: fluffiness.getValue(),
-            // friend: friendsInputYes.value,
-        }
-
-        retrieveCats();
-
-        catArray.push(newCat);
-
-        printCats();
-        storeCats();
-
-        //     clear the inputs - also clears the positive validation bootstrap class (you don't need to see
-        //     positive validation if you have successfully submitted)
-        clearForm(catName);
-        clearForm(coatColour);
-        clearForm(fluffiness);
-
-    }
+// const main = document.getElementById("main");
 
 
-}
+// Form group variables
 
+const form = document.getElementById("cat-creator");
 
-// Get and validate the cat name
-export const catName = {
+// Cat name
+export const catNameFormGroup = {
     input: document.getElementById('cat-name'),
     feedback: document.getElementById('name-feedback'),
     getValue() {
@@ -68,8 +28,8 @@ export const catName = {
     },
 };
 
-// Get and validate the cat colour
-export const coatColour = {
+// Cat colour
+export const coatColourFormGroup = {
     input: document.getElementById('coat-colour'),
     feedback: document.getElementById('colour-feedback'),
     getValue() {
@@ -80,8 +40,8 @@ export const coatColour = {
     },
 };
 
-// Get and validate the cat fluffiness
-export const fluffiness = {
+// Cat fluffiness
+export const fluffinessFormGroup = {
     input: document.getElementById('fluffiness'),
     feedback: document.getElementById('fluffiness-feedback'),
     getValue() {
@@ -92,17 +52,111 @@ export const fluffiness = {
     },
 };
 
+// Edit form variables
+
+const editForm = document.getElementById("cat-editor")
+
+// Edit cat name
+export const editCatNameFormGroup = {
+    input: document.getElementById('edit-cat-name'),
+    feedback: document.getElementById('edit-name-feedback'),
+    getValue() {
+        return this.input.value
+    },
+    getIssues() {
+        return checkNameValidity(this.getValue(), editingCatArray)
+    },
+};
+
+// edit cat colour
+export const editCoatColourFormGroup = {
+    input: document.getElementById('edit-coat-colour'),
+    feedback: document.getElementById('edit-colour-feedback'),
+    getValue() {
+        return this.input.value
+    },
+    getIssues() {
+        return checkColourValidity(this.getValue())
+    },
+};
+
+// edit cat fluffiness
+export const editFluffinessFormGroup = {
+    input: document.getElementById('edit-fluffiness'),
+    feedback: document.getElementById('edit-fluffiness-feedback'),
+    getValue() {
+        return this.input.value
+    },
+    getIssues() {
+        return checkFluffinessValidity(this.getValue())
+    },
+};
+// Cancel edit button
+const cancelEditButton = document.getElementById("cancel-edit");
+
+// Submit Edit button
+const submitEditButton = document.getElementById("submit-edit");
+
+
+
+// Inputs
+//
+// const friendsInputYes = document.getElementById("yes");
+// const friendsInputNo = document.getElementById("no");
+
+let catArray = [];
+let editingCatArray = [];
+let catID;
+
+// submit the fucker
+
+form.onsubmit = (event) => {
+    event.preventDefault();
+
+    displayValidity(catNameFormGroup);
+    displayValidity(coatColourFormGroup);
+    displayValidity(fluffinessFormGroup);
+
+    let validated = true;
+    if (catNameFormGroup.getIssues().length > 0 || coatColourFormGroup.getIssues().length > 0 || fluffinessFormGroup.getIssues().length > 0) {
+        validated = false;
+    }
+    if (validated) {
+        let newCat = {
+            name: catNameFormGroup.getValue(),
+            colour: coatColourFormGroup.getValue(),
+            fluffiness: fluffinessFormGroup.getValue(),
+            // friend: friendsInputYes.value,
+        }
+
+        retrieveCats();
+        catArray.push(newCat);
+        printCats();
+        storeCats();
+
+
+        //     clear the inputs - also clears the positive validation bootstrap class (you don't need to see
+        //     positive validation if you have successfully submitted)
+        clearForm(catNameFormGroup);
+        clearForm(coatColourFormGroup);
+        clearForm(fluffinessFormGroup);
+
+    }
+
+
+}
+
+
+
+
 // Get and validate the friend value I HAVE NOT DONE THIS YET
 
 // Display input validity
 
 export const displayValidity = (formGroup) => {
     let issues = formGroup.getIssues();
-    console.log(formGroup.input.classList);
     formGroup.input.classList.remove('is-valid,', 'is-invalid');
-    console.log(formGroup.input.classList);
     formGroup.input.classList.add(issues.length < 1 ? 'is-valid' : 'is-invalid');
-    console.log(formGroup.input.classList);
     formGroup.feedback.replaceChildren();
     let issueElements = issues.map((issue) => {
         let issueEl = document.createElement("small");
@@ -126,15 +180,61 @@ export const printCats = () => {
         catColour.textContent = "Coat Colour: " + cat.colour;
         let catFluffiness = document.createElement("p");
         catFluffiness.textContent = "Fluffiness: " + cat.fluffiness;
-        let deleteCat = document.createElement("button");
-        deleteCat.textContent = "Delete Cat";
-        deleteCat.onclick = () => {
-            deleteCat.parentElement.remove();
+
+
+        //  create edit button
+        let editCatButton = document.createElement("button");
+        editCatButton.textContent = "Edit Cat";
+        editCatButton.onclick = () => {
+            editForm.style.display = "block";
+            catID = cat.name
+            addCatToEditForm(catID, catArray);
+        }
+        //  make it submittable
+
+        submitEditButton.onclick = (event) => {
+            event.preventDefault();
+
+            // validation stuff
+            // making an array without our current unique name so we can check against it without hitting any conflicts
+            editingCatArray = catArray.filter((value) => value.name !== catID);
+            displayValidity(editCatNameFormGroup);
+            displayValidity(editCoatColourFormGroup);
+            displayValidity(editFluffinessFormGroup);
+
+            let editValidated = true;
+            if (editCatNameFormGroup.getIssues().length > 0 || editCoatColourFormGroup.getIssues().length > 0 || editFluffinessFormGroup.getIssues().length > 0) {
+                editValidated = false;
+            }
+
+            if (editValidated) {
+                // Editing the cat and the catArray
+                editOriginalCat(catID, catArray);
+                storeCats();
+                printCats();
+                editForm.style.display = "none";
+            }
+        }
+
+        // cancel edit button
+
+        cancelEditButton.onclick = () => {
+            editForm.style.display = "none";
+        }
+
+
+        // create delete button
+        let deleteCatButton = document.createElement("button");
+        deleteCatButton.textContent = "Delete Cat";
+        deleteCatButton.onclick = () => {
+            deleteCatButton.parentElement.remove();
             catArray = catArray.filter((value) => value.name !== cat.name);
-            // must modify the cat array here or it will continue to be stored intact
+            // must edit the stored cat array here, or it will continue to be stored intact
             storeCats();
         }
-        catEl.append(catName, catColour, catFluffiness, deleteCat);
+
+
+        catEl.append(catName, catColour, catFluffiness, editCatButton, deleteCatButton);
         return catEl;
     })
 
@@ -142,8 +242,8 @@ export const printCats = () => {
 }
 // Storing the cats
 // Adding to local storage
-//
-const storeCats = () => {
+
+export const storeCats = () => {
 
     localStorage.setItem('Cats',JSON.stringify(catArray));
 }
@@ -169,6 +269,7 @@ const killAllCats = () => {
 const killAllCatsButton = document.getElementById("kill-all-cats");
 
 killAllCatsButton.onclick = () => {
+    // change this to a modal at some point
     if (confirm("are you sure you want to kill all your cats?")) {
         killAllCats();
     }
@@ -181,4 +282,7 @@ const clearForm = (formGroup) => {
     formGroup.input.classList.remove('is-valid');
 
 }
+
+
+
 

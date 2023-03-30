@@ -1,6 +1,6 @@
-export const createNewCat = (catName, colour, fluffiness, friend) => {
+export const createNewCat = (name, colour, fluffiness, friend) => {
     return {
-        catName,
+        name,
         colour,
         fluffiness,
         friend,
