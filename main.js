@@ -3,70 +3,21 @@ import './style.css';
 import {checkNameValidity} from "./catName.js";
 import {checkFluffinessValidity} from "./fluffiness.js"
 import {checkColourValidity} from "./coatColour.js";
+
 import {createNewCat} from "./createCat.js";
+import {addCatToEditForm} from "./addCatToEditForm.js";
+import {editOriginalCat} from "./editOriginalCat.js";
+
+
+// const main = document.getElementById("main");
+
+
+// Form group variables
 
 const form = document.getElementById("cat-creator");
-const main = document.getElementById("main");
 
-
-const editForm = document.getElementById("cat-editor")
-const cancelEditButton = document.getElementById("cancel-edit");
-const submitEditButton = document.getElementById("submit-edit");
-
-
-
-// Inputs
-
-const friendsInputYes = document.getElementById("yes");
-const friendsInputNo = document.getElementById("no");
-
-let catArray = [];
-// let editingCatArray = [];
-
-
-
-// submit the fucker
-
-form.onsubmit = (event) => {
-    event.preventDefault();
-
-    displayValidity(catName);
-    displayValidity(coatColour);
-    displayValidity(fluffiness);
-
-    let validated = true;
-    if (catName.getIssues().length > 0 || coatColour.getIssues().length > 0 || fluffiness.getIssues().length > 0) {
-        validated = false;
-    }
-    if (validated) {
-        let newCat = {
-            name: catName.getValue(),
-            colour: coatColour.getValue(),
-            fluffiness: fluffiness.getValue(),
-            // friend: friendsInputYes.value,
-        }
-
-        retrieveCats();
-
-        catArray.push(newCat);
-
-        printCats();
-        storeCats();
-
-        //     clear the inputs - also clears the positive validation bootstrap class (you don't need to see
-        //     positive validation if you have successfully submitted)
-        clearForm(catName);
-        clearForm(coatColour);
-        clearForm(fluffiness);
-
-    }
-
-
-}
-
-
-// Get and validate the cat name
-export const catName = {
+// Cat name
+export const catNameFormGroup = {
     input: document.getElementById('cat-name'),
     feedback: document.getElementById('name-feedback'),
     getValue() {
@@ -77,8 +28,8 @@ export const catName = {
     },
 };
 
-// Get and validate the cat colour
-export const coatColour = {
+// Cat colour
+export const coatColourFormGroup = {
     input: document.getElementById('coat-colour'),
     feedback: document.getElementById('colour-feedback'),
     getValue() {
@@ -89,8 +40,8 @@ export const coatColour = {
     },
 };
 
-// Get and validate the cat fluffiness
-export const fluffiness = {
+// Cat fluffiness
+export const fluffinessFormGroup = {
     input: document.getElementById('fluffiness'),
     feedback: document.getElementById('fluffiness-feedback'),
     getValue() {
@@ -100,6 +51,103 @@ export const fluffiness = {
         return checkFluffinessValidity(this.getValue())
     },
 };
+
+// Edit form variables
+
+const editForm = document.getElementById("cat-editor")
+
+// Edit cat name
+export const editCatNameFormGroup = {
+    input: document.getElementById('edit-cat-name'),
+    feedback: document.getElementById('edit-name-feedback'),
+    getValue() {
+        return this.input.value
+    },
+    getIssues() {
+        return checkNameValidity(this.getValue(), editingCatArray)
+    },
+};
+
+// edit cat colour
+export const editCoatColourFormGroup = {
+    input: document.getElementById('edit-coat-colour'),
+    feedback: document.getElementById('edit-colour-feedback'),
+    getValue() {
+        return this.input.value
+    },
+    getIssues() {
+        return checkColourValidity(this.getValue())
+    },
+};
+
+// edit cat fluffiness
+export const editFluffinessFormGroup = {
+    input: document.getElementById('edit-fluffiness'),
+    feedback: document.getElementById('edit-fluffiness-feedback'),
+    getValue() {
+        return this.input.value
+    },
+    getIssues() {
+        return checkFluffinessValidity(this.getValue())
+    },
+};
+// Cancel edit button
+const cancelEditButton = document.getElementById("cancel-edit");
+
+// Submit Edit button
+const submitEditButton = document.getElementById("submit-edit");
+
+
+
+// Inputs
+//
+// const friendsInputYes = document.getElementById("yes");
+// const friendsInputNo = document.getElementById("no");
+
+let catArray = [];
+let editingCatArray = [];
+let catID;
+
+// submit the fucker
+
+form.onsubmit = (event) => {
+    event.preventDefault();
+
+    displayValidity(catNameFormGroup);
+    displayValidity(coatColourFormGroup);
+    displayValidity(fluffinessFormGroup);
+
+    let validated = true;
+    if (catNameFormGroup.getIssues().length > 0 || coatColourFormGroup.getIssues().length > 0 || fluffinessFormGroup.getIssues().length > 0) {
+        validated = false;
+    }
+    if (validated) {
+        let newCat = {
+            name: catNameFormGroup.getValue(),
+            colour: coatColourFormGroup.getValue(),
+            fluffiness: fluffinessFormGroup.getValue(),
+            // friend: friendsInputYes.value,
+        }
+
+        retrieveCats();
+        catArray.push(newCat);
+        printCats();
+        storeCats();
+
+
+        //     clear the inputs - also clears the positive validation bootstrap class (you don't need to see
+        //     positive validation if you have successfully submitted)
+        clearForm(catNameFormGroup);
+        clearForm(coatColourFormGroup);
+        clearForm(fluffinessFormGroup);
+
+    }
+
+
+}
+
+
+
 
 // Get and validate the friend value I HAVE NOT DONE THIS YET
 
@@ -133,23 +181,44 @@ export const printCats = () => {
         let catFluffiness = document.createElement("p");
         catFluffiness.textContent = "Fluffiness: " + cat.fluffiness;
 
+
         //  create edit button
         let editCatButton = document.createElement("button");
         editCatButton.textContent = "Edit Cat";
         editCatButton.onclick = () => {
             editForm.style.display = "block";
+            catID = cat.name
+            addCatToEditForm(catID, catArray);
         }
-
-        //  populate the edit form and make it submittable
-
-        const editCatNameInput = document.getElementById("edit-cat-name");
-        editCatNameInput.value = cat.name;
+        //  make it submittable
 
         submitEditButton.onclick = (event) => {
             event.preventDefault();
-            cat.name = editCatNameInput.value;
-            printCats();
-            storeCats();
+
+            // validation stuff
+            // making an array without our current unique name so we can check against it without hitting any conflicts
+            editingCatArray = catArray.filter((value) => value.name !== catID);
+            displayValidity(editCatNameFormGroup);
+            displayValidity(editCoatColourFormGroup);
+            displayValidity(editFluffinessFormGroup);
+
+            let editValidated = true;
+            if (editCatNameFormGroup.getIssues().length > 0 || editCoatColourFormGroup.getIssues().length > 0 || editFluffinessFormGroup.getIssues().length > 0) {
+                editValidated = false;
+            }
+
+            if (editValidated) {
+                // Editing the cat and the catArray
+                editOriginalCat(catID, catArray);
+                storeCats();
+                printCats();
+                editForm.style.display = "none";
+            }
+        }
+
+        // cancel edit button
+
+        cancelEditButton.onclick = () => {
             editForm.style.display = "none";
         }
 
@@ -173,8 +242,8 @@ export const printCats = () => {
 }
 // Storing the cats
 // Adding to local storage
-//
-const storeCats = () => {
+
+export const storeCats = () => {
 
     localStorage.setItem('Cats',JSON.stringify(catArray));
 }
@@ -214,110 +283,6 @@ const clearForm = (formGroup) => {
 
 }
 
-
-// sketching out the edit function
-
-cancelEditButton.onclick = () => {
-    editForm.style.display = "none";
-}
-
-editForm.onsubmit = (event) =>
-    event.preventDefault();
-// validate the inputs
-// edit the original cat
-// update catArray
-// print and store the cats
-// hide the edit form
-
-
-// click edit button x
-// form pops up populated with the current values
-// we create a new array with the cat we are editing filtered out of it
-// we make our edits and click submit
-// we run our validation checks using our new array
-// failed? normal validation bootstrap messages; nothing is changed x
-// cancelled? form disappears, nothing is changed x
-// passed? we create a new cat x
-// we delete the old cat from and add our new cat to the original array (at the same index
-// as the old cat)
-// for now I am happy to just get the edit form onto the screen (anywhere);
-// I will try and make it into a proper popup using bootstrap later.
-// Need to work out how to not have 2 edit forms open at once - I think
-// using the modal functionality where if you click off it the form closes
-// would be enough
-//
-// const createEditForm = (cat) => {
-//     let editForm = document.createElement("form");
-//     editForm.classList.add("container", "cat-editor");
-//     editForm.id = "cat-editor";
-//     // Name
-//     let editFormGroupName = document.createElement("div");
-//     editFormGroupName.classList.add("form-group");
-//     let editNameLabel = document.createElement("label");
-//     editNameLabel.htmlFor = "edit-cat-name";
-//     editNameLabel.textContent = "Edit Name?"
-//     let editNameInput = document.createElement("input");
-//     editNameInput.classList.add("form-control");
-//     editNameInput.id = "edit-cat-name";
-//     editNameInput.type = "text";
-//     editNameInput.value = cat.name;
-//     let editNameFeedback = document.createElement("div");
-//     editNameFeedback.classList.add("invalid-feedback");
-//     editNameFeedback.id = "edit-name-feedback";
-//     editFormGroupName.append(editNameLabel, editNameInput, editNameFeedback);
-//     editForm.append(editFormGroupName);
-//
-//     // Cancel button
-//     let cancelEditButton = document.createElement("button");
-//     cancelEditButton.type = "button";
-//     cancelEditButton.textContent = "Cancel";
-//     editForm.appendChild(cancelEditButton);
-//     cancelEditButton.onclick = () => {
-//         cancelEditButton.parentElement.remove();
-//     }
-//
-//     // Submit edits button
-//     let confirmEditButton = document.createElement("button");
-//     confirmEditButton.type = "submit";
-//     confirmEditButton.textContent = "Confirm Edits";
-//     editForm.appendChild(confirmEditButton);
-//     editForm.onsubmit = (event) => {
-//         event.preventDefault();
-//         //     Adding some actual editing functionality
-//
-//         // Get and validate edited name
-//
-//         const editCatName = {
-//             input: editNameInput,
-//             feedback: editNameFeedback,
-//             getValue() {
-//                 return this.input.value
-//             },
-//             getIssues() {
-//                 return checkNameValidity(this.getValue(), editingCatArray)
-//             },
-//         };
-//         // create filtered array for validation purposes
-//
-//         let editingCatArray = catArray.filter((value) => value.name !== cat.name);
-//         let editingIndex = catArray.indexOf(cat);
-//
-//         displayValidity(editCatName);
-//
-//         let validated = true;
-//         if (editCatName.getIssues().length > 0) {
-//             validated = false;
-//         }
-//         if (validated) {
-//             let editedCat = createNewCat(editNameInput.value, "egg", "egg", "egg")
-//             catArray[editingIndex] = editedCat;
-//             printCats();
-//             storeCats();
-//             editForm.remove();
-//         }
-//     }
-//         return editForm;
-// }
 
 
 
