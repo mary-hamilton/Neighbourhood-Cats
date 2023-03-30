@@ -52,6 +52,42 @@ export const fluffinessFormGroup = {
     },
 };
 
+// Image stuff
+
+const imageInput = document.getElementById('image-input');
+const imagePreview = document.getElementById('image-preview');
+
+const reader = new FileReader();
+
+reader.onload = () => {
+    const readImage = reader.result;
+    if (readImage) {
+        const previewEl = document.createElement('img');
+        previewEl.setAttribute('src', readImage);
+        previewEl.classList.add('preview');
+        imagePreview.replaceChildren(previewEl);
+        cardImage = readImage;
+
+    }
+}
+
+imageInput.onchange = () => {
+    const file = imageInput.files[0];
+    reader.readAsDataURL(file);
+}
+
+const makeCardImageEl = (catobj) => {
+    let cardImageEl = document.createElement("img");
+    cardImageEl.setAttribute("src", catobj.image)
+    cardImageEl.classList.add("card-image");
+    return cardImageEl;
+}
+
+
+// const friendsInputYes = document.getElementById("yes");
+// const friendsInputNo = document.getElementById("no");
+
+
 // Edit form variables
 
 const editForm = document.getElementById("cat-editor")
@@ -97,35 +133,28 @@ const cancelEditButton = document.getElementById("cancel-edit");
 // Submit Edit button
 const submitEditButton = document.getElementById("submit-edit");
 
-
-
-// Inputs
-//
-// const friendsInputYes = document.getElementById("yes");
-// const friendsInputNo = document.getElementById("no");
+// Global modifiable variables
 
 let catArray = [];
 let editingCatArray = [];
 let catID;
+let cardImage;
 
 // submit the fucker
 
 form.onsubmit = (event) => {
     event.preventDefault();
 
-    displayValidity(catNameFormGroup);
-    displayValidity(coatColourFormGroup);
-    displayValidity(fluffinessFormGroup);
+    let formElements = [catNameFormGroup, coatColourFormGroup, fluffinessFormGroup];
 
-    let validated = true;
-    if (catNameFormGroup.getIssues().length > 0 || coatColourFormGroup.getIssues().length > 0 || fluffinessFormGroup.getIssues().length > 0) {
-        validated = false;
-    }
-    if (validated) {
+    formElements.forEach(displayValidity);
+
+    if (validateAll(formElements)) {
         let newCat = {
             name: catNameFormGroup.getValue(),
             colour: coatColourFormGroup.getValue(),
             fluffiness: fluffinessFormGroup.getValue(),
+            image: cardImage,
             // friend: friendsInputYes.value,
         }
 
@@ -134,25 +163,17 @@ form.onsubmit = (event) => {
         printCats();
         storeCats();
 
-
         //     clear the inputs - also clears the positive validation bootstrap class (you don't need to see
         //     positive validation if you have successfully submitted)
-        clearForm(catNameFormGroup);
-        clearForm(coatColourFormGroup);
-        clearForm(fluffinessFormGroup);
+
+        formElements.forEach(clearForm);
 
     }
-
-
 }
-
-
-
 
 // Get and validate the friend value I HAVE NOT DONE THIS YET
 
 // Display input validity
-
 export const displayValidity = (formGroup) => {
     let issues = formGroup.getIssues();
     formGroup.input.classList.remove('is-valid,', 'is-invalid');
@@ -166,7 +187,7 @@ export const displayValidity = (formGroup) => {
     issueElements.forEach((el) => formGroup.feedback.appendChild(el));
 }
 
-// create and display the cat cards
+// create and print the cat cards
 
 export const printCats = () => {
     const catCardHolder = document.getElementById("cat-card-holder")
@@ -180,7 +201,7 @@ export const printCats = () => {
         catColour.textContent = "Coat Colour: " + cat.colour;
         let catFluffiness = document.createElement("p");
         catFluffiness.textContent = "Fluffiness: " + cat.fluffiness;
-
+        let cardImageEl = makeCardImageEl(cat);
 
         //  create edit button
         let editCatButton = document.createElement("button");
@@ -198,16 +219,12 @@ export const printCats = () => {
             // validation stuff
             // making an array without our current unique name so we can check against it without hitting any conflicts
             editingCatArray = catArray.filter((value) => value.name !== catID);
-            displayValidity(editCatNameFormGroup);
-            displayValidity(editCoatColourFormGroup);
-            displayValidity(editFluffinessFormGroup);
 
-            let editValidated = true;
-            if (editCatNameFormGroup.getIssues().length > 0 || editCoatColourFormGroup.getIssues().length > 0 || editFluffinessFormGroup.getIssues().length > 0) {
-                editValidated = false;
-            }
+            let editFormElements = [editCatNameFormGroup, editCoatColourFormGroup, editFluffinessFormGroup];
 
-            if (editValidated) {
+            editFormElements.forEach(displayValidity);
+
+            if (validateAll(editFormElements)) {
                 // Editing the cat and the catArray
                 editOriginalCat(catID, catArray);
                 storeCats();
@@ -223,26 +240,29 @@ export const printCats = () => {
         }
 
 
-        // create delete button
+        // delete button
+
         let deleteCatButton = document.createElement("button");
         deleteCatButton.textContent = "Delete Cat";
         deleteCatButton.onclick = () => {
             deleteCatButton.parentElement.remove();
             catArray = catArray.filter((value) => value.name !== cat.name);
-            // must edit the stored cat array here, or it will continue to be stored intact
             storeCats();
         }
 
+        // building the cat card
 
-        catEl.append(catName, catColour, catFluffiness, editCatButton, deleteCatButton);
+        catEl.append(cardImageEl, catName, catColour, catFluffiness, editCatButton, deleteCatButton);
         return catEl;
     })
 
+    // adding the cat cards to the DOM
+
     catCards.forEach((el) => catCardHolder.prepend(el));
 }
+
 // Storing the cats
 // Adding to local storage
-
 export const storeCats = () => {
 
     localStorage.setItem('Cats',JSON.stringify(catArray));
@@ -259,7 +279,7 @@ const retrieveCats = () => {
 retrieveCats();
 printCats()
 
-// adding delete all cats button
+// delete all cats button
 const killAllCats = () => {
     localStorage.removeItem('Cats');
     catArray = [];
@@ -275,7 +295,7 @@ killAllCatsButton.onclick = () => {
     }
 }
 
-// clear the form after positive submission
+// clear form after positive submission
 
 const clearForm = (formGroup) => {
     formGroup.input.value = "";
@@ -283,6 +303,14 @@ const clearForm = (formGroup) => {
 
 }
 
+// Validation functions
+const validate = (formGroup) => {
+    return formGroup.getIssues().length === 0;
+}
+
+const validateAll = (array) => {
+    return array.every((value) => validate(value));
+}
 
 
 
