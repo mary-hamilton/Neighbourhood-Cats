@@ -7,9 +7,7 @@ import {checkColourValidity} from "./coatColour.js";
 import {createNewCat} from "./createCat.js";
 import {addCatToEditForm} from "./addCatToEditForm.js";
 import {editOriginalCat} from "./editOriginalCat.js";
-
-
-// const main = document.getElementById("main");
+import {isEmpty, onlyLetters, under50kb} from "./utils.js";
 
 
 // Form group variables
@@ -52,9 +50,21 @@ export const fluffinessFormGroup = {
     },
 };
 
+// Image
+
+export const imageFormGroup = {
+    input: document.getElementById('image-input'),
+    feedback: document.getElementById('image-feedback'),
+    getValue() {
+        return this.input.files[0]
+    },
+    getIssues() {
+        return checkImageValidity(this.getValue())
+    },
+};
+
 // Image stuff
 
-const imageInput = document.getElementById('image-input');
 const imagePreview = document.getElementById('image-preview');
 
 const reader = new FileReader();
@@ -71,16 +81,32 @@ reader.onload = () => {
     }
 }
 
-imageInput.onchange = () => {
-    const file = imageInput.files[0];
+imageFormGroup.input.onchange = () => {
+
+    const file = imageFormGroup.input.files[0];
     reader.readAsDataURL(file);
+
 }
 
-const makeCardImageEl = (catobj) => {
-    let cardImageEl = document.createElement("img");
-    cardImageEl.setAttribute("src", catobj.image)
-    cardImageEl.classList.add("card-image");
-    return cardImageEl;
+export const checkImageValidity = (image) => {
+    let issues = [];
+    if(image) {
+        if (!under50kb(image)) {
+            issues.push("Your image is too large!")
+        }
+    } else {
+        imageFormGroup.input.classList.remove('is-valid,', 'is-invalid');
+    }
+    return issues;
+}
+
+const makeCardImageEl = (cat) => {
+    if (cat.image) {
+        let cardImageEl = document.createElement("img");
+        cardImageEl.setAttribute("src", cat.image)
+        cardImageEl.classList.add("card-image");
+        return cardImageEl;
+    }
 }
 
 
@@ -145,7 +171,7 @@ let cardImage;
 form.onsubmit = (event) => {
     event.preventDefault();
 
-    let formElements = [catNameFormGroup, coatColourFormGroup, fluffinessFormGroup];
+    let formElements = [catNameFormGroup, coatColourFormGroup, fluffinessFormGroup, imageFormGroup];
 
     formElements.forEach(displayValidity);
 
@@ -176,6 +202,7 @@ form.onsubmit = (event) => {
 // Display input validity
 export const displayValidity = (formGroup) => {
     let issues = formGroup.getIssues();
+    console.log(issues);
     formGroup.input.classList.remove('is-valid,', 'is-invalid');
     formGroup.input.classList.add(issues.length < 1 ? 'is-valid' : 'is-invalid');
     formGroup.feedback.replaceChildren();
@@ -193,6 +220,7 @@ export const printCats = () => {
     const catCardHolder = document.getElementById("cat-card-holder")
     catCardHolder.replaceChildren();
     let catCards = catArray.map((cat) => {
+
         let catEl = document.createElement("div");
         catEl.classList.add("cat-cards");
         let catName = document.createElement("p");
@@ -252,7 +280,10 @@ export const printCats = () => {
 
         // building the cat card
 
-        catEl.append(cardImageEl, catName, catColour, catFluffiness, editCatButton, deleteCatButton);
+        let cardElementsArray = [cardImageEl, catName, catColour, catFluffiness, editCatButton, deleteCatButton];
+        let truthyCardElementsArray = cardElementsArray.filter((value) => value);
+
+        truthyCardElementsArray.forEach((bit) => catEl.append(bit));
         return catEl;
     })
 
@@ -307,10 +338,10 @@ const clearForm = (formGroup) => {
 const validate = (formGroup) => {
     return formGroup.getIssues().length === 0;
 }
-
 const validateAll = (array) => {
     return array.every((value) => validate(value));
 }
+
 
 
 
