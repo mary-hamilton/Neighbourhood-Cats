@@ -63,6 +63,12 @@
             <input class="form-control" id="edit-fluffiness" type="number">
             <div class="invalid-feedback" id="edit-fluffiness-feedback"></div>
         </div>
+        <div class="form-group">
+            <label for="edit-image-input">Picture of your cat</label>
+            <input class="form-control" type="file" id="edit-image-input" accept="image/jpeg, image/png"/>
+            <div class="invalid-feedback" id="editimage-feedback"></div>
+            <div id="edit-image-preview"></div>
+        </div>
         <button id="cancel-edit" type="button">Cancel</button>
         <button id="submit-edit" type="submit">Submit</button>
     </form>

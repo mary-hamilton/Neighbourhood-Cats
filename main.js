@@ -1,13 +1,14 @@
 import './bootstrap.css';
 import './style.css';
-import {checkNameValidity} from "./catName.js";
-import {checkFluffinessValidity} from "./fluffiness.js"
-import {checkColourValidity} from "./coatColour.js";
-
 import {createNewCat} from "./createCat.js";
 import {addCatToEditForm} from "./addCatToEditForm.js";
 import {editOriginalCat} from "./editOriginalCat.js";
-import {isEmpty, onlyLetters, under50kb} from "./utils.js";
+import {
+    checkNameValidity,
+    checkFluffinessValidity,
+    checkColourValidity,
+    checkImageValidity,
+} from "./utils.js";
 
 
 // Form group variables
@@ -83,22 +84,11 @@ reader.onload = () => {
 
 imageFormGroup.input.onchange = () => {
 
-    const file = imageFormGroup.input.files[0];
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(imageFormGroup.input.files[0]);
 
 }
 
-export const checkImageValidity = (image) => {
-    let issues = [];
-    if(image) {
-        if (!under50kb(image)) {
-            issues.push("Your image is too large!")
-        }
-    } else {
-        imageFormGroup.input.classList.remove('is-valid,', 'is-invalid');
-    }
-    return issues;
-}
+
 
 const makeCardImageEl = (cat) => {
     if (cat.image) {
@@ -151,6 +141,17 @@ export const editFluffinessFormGroup = {
     },
     getIssues() {
         return checkFluffinessValidity(this.getValue())
+    },
+};
+// edit image
+export const editImageFormGroup = {
+    input: document.getElementById('edit-image-input'),
+    feedback: document.getElementById('edit-image-feedback'),
+    getValue() {
+        return this.input.files[0]
+    },
+    getIssues() {
+        return checkImageValidity(this.getValue())
     },
 };
 // Cancel edit button
@@ -220,16 +221,24 @@ export const printCats = () => {
     const catCardHolder = document.getElementById("cat-card-holder")
     catCardHolder.replaceChildren();
     let catCards = catArray.map((cat) => {
-
         let catEl = document.createElement("div");
         catEl.classList.add("cat-cards");
+
+        let cardElArray = [];
+
+        let cardImageEl = makeCardImageEl(cat);
+        if (cardImageEl) {
+            cardElArray.push(cardImageEl);
+        }
         let catName = document.createElement("p");
         catName.textContent = "Cat Name: " + cat.name;
+        cardElArray.push(catName);
         let catColour = document.createElement("p");
         catColour.textContent = "Coat Colour: " + cat.colour;
+        cardElArray.push(catColour);
         let catFluffiness = document.createElement("p");
         catFluffiness.textContent = "Fluffiness: " + cat.fluffiness;
-        let cardImageEl = makeCardImageEl(cat);
+        cardElArray.push(catFluffiness);
 
         //  create edit button
         let editCatButton = document.createElement("button");
@@ -239,6 +248,8 @@ export const printCats = () => {
             catID = cat.name
             addCatToEditForm(catID, catArray);
         }
+        cardElArray.push(editCatButton);
+
         //  make it submittable
 
         submitEditButton.onclick = (event) => {
@@ -277,13 +288,11 @@ export const printCats = () => {
             catArray = catArray.filter((value) => value.name !== cat.name);
             storeCats();
         }
+        cardElArray.push(deleteCatButton);
 
         // building the cat card
 
-        let cardElementsArray = [cardImageEl, catName, catColour, catFluffiness, editCatButton, deleteCatButton];
-        let truthyCardElementsArray = cardElementsArray.filter((value) => value);
-
-        truthyCardElementsArray.forEach((bit) => catEl.append(bit));
+        cardElArray.forEach((bit) => catEl.append(bit));
         return catEl;
     })
 
@@ -335,10 +344,10 @@ const clearForm = (formGroup) => {
 }
 
 // Validation functions
-const validate = (formGroup) => {
+export const validate = (formGroup) => {
     return formGroup.getIssues().length === 0;
 }
-const validateAll = (array) => {
+export const validateAll = (array) => {
     return array.every((value) => validate(value));
 }
 
