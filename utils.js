@@ -79,3 +79,11 @@ export const checkImageValidity = (image) => {
     }
     return issues;
 }
+
+// clear form after positive submission
+
+export const clearForm = (formGroup) => {
+    formGroup.input.value = "";
+    formGroup.input.classList.remove("is-valid");
+
+}
