@@ -1,13 +1,12 @@
 import './bootstrap.css';
 import './style.css';
-import {createNewCat} from "./createCat.js";
 import {addCatToEditForm} from "./addCatToEditForm.js";
-import {editOriginalCat} from "./editOriginalCat.js";
+import {editOriginalCat, setImageUrl} from "./editOriginalCat.js";
 import {
     checkNameValidity,
     checkFluffinessValidity,
     checkColourValidity,
-    checkImageValidity,
+    checkImageValidity, clearForm,
 } from "./utils.js";
 
 
@@ -78,17 +77,18 @@ reader.onload = () => {
         previewEl.classList.add('preview');
         imagePreview.replaceChildren(previewEl);
         cardImage = readImage;
-
+        displayValidity(imageFormGroup);
     }
 }
 
 imageFormGroup.input.onchange = () => {
-
-    reader.readAsDataURL(imageFormGroup.input.files[0]);
-
+    if (imageFormGroup.input.files[0]) {
+        reader.readAsDataURL(imageFormGroup.input.files[0]);
+    } else {
+        clearForm(imageFormGroup);
+        imagePreview.replaceChildren()
+    }
 }
-
-
 
 const makeCardImageEl = (cat) => {
     if (cat.image) {
@@ -154,6 +154,29 @@ export const editImageFormGroup = {
         return checkImageValidity(this.getValue())
     },
 };
+
+// Edit image stuff
+
+const editImagePreview = document.getElementById('edit-image-preview');
+
+const editReader = new FileReader();
+
+editReader.onload = () => {
+    const editReadImage = editReader.result;
+    if (editReadImage) {
+        const editPreviewEl = document.createElement('img');
+        editPreviewEl.setAttribute('src', editReadImage);
+        editPreviewEl.classList.add('preview');
+        editImagePreview.replaceChildren(editPreviewEl);
+        setImageUrl(editReadImage);
+    }
+}
+
+editImageFormGroup.input.onchange = () => {
+    editReader.readAsDataURL(editImageFormGroup.input.files[0]);
+}
+
+
 // Cancel edit button
 const cancelEditButton = document.getElementById("cancel-edit");
 
@@ -194,7 +217,6 @@ form.onsubmit = (event) => {
         //     positive validation if you have successfully submitted)
 
         formElements.forEach(clearForm);
-
     }
 }
 
@@ -203,7 +225,6 @@ form.onsubmit = (event) => {
 // Display input validity
 export const displayValidity = (formGroup) => {
     let issues = formGroup.getIssues();
-    console.log(issues);
     formGroup.input.classList.remove('is-valid,', 'is-invalid');
     formGroup.input.classList.add(issues.length < 1 ? 'is-valid' : 'is-invalid');
     formGroup.feedback.replaceChildren();
@@ -251,7 +272,6 @@ export const printCats = () => {
         cardElArray.push(editCatButton);
 
         //  make it submittable
-
         submitEditButton.onclick = (event) => {
             event.preventDefault();
 
@@ -259,7 +279,7 @@ export const printCats = () => {
             // making an array without our current unique name so we can check against it without hitting any conflicts
             editingCatArray = catArray.filter((value) => value.name !== catID);
 
-            let editFormElements = [editCatNameFormGroup, editCoatColourFormGroup, editFluffinessFormGroup];
+            let editFormElements = [editCatNameFormGroup, editCoatColourFormGroup, editFluffinessFormGroup, editImageFormGroup];
 
             editFormElements.forEach(displayValidity);
 
@@ -335,13 +355,6 @@ killAllCatsButton.onclick = () => {
     }
 }
 
-// clear form after positive submission
-
-const clearForm = (formGroup) => {
-    formGroup.input.value = "";
-    formGroup.input.classList.remove('is-valid');
-
-}
 
 // Validation functions
 export const validate = (formGroup) => {
