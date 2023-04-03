@@ -90,7 +90,7 @@ imageFormGroup.input.onchange = () => {
     }
 }
 
-const makeCardImageEl = (cat) => {
+export const makeCardImageEl = (cat) => {
     if (cat.image) {
         let cardImageEl = document.createElement("img");
         cardImageEl.setAttribute("src", cat.image)
@@ -157,7 +157,7 @@ export const editImageFormGroup = {
 
 // Edit image stuff
 
-const editImagePreview = document.getElementById('edit-image-preview');
+export const editImagePreview = document.getElementById('edit-image-preview');
 
 const editReader = new FileReader();
 
@@ -217,6 +217,8 @@ form.onsubmit = (event) => {
         //     positive validation if you have successfully submitted)
 
         formElements.forEach(clearForm);
+        imagePreview.replaceChildren();
+
     }
 }
 
@@ -290,13 +292,17 @@ export const printCats = () => {
                 printCats();
                 editForm.style.display = "none";
             }
-        }
 
-        // cancel edit button
+
+        }
+          // cancel edit button
 
         cancelEditButton.onclick = () => {
             editForm.style.display = "none";
+            clearForm(editImageFormGroup);
         }
+
+
 
 
         // delete button
