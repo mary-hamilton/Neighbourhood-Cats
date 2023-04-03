@@ -6,7 +6,8 @@ import {
     checkNameValidity,
     checkFluffinessValidity,
     checkColourValidity,
-    checkImageValidity, clearForm,
+    checkImageValidity,
+    clearForm, checkFriendsValidity,
 } from "./utils.js";
 
 
@@ -49,6 +50,39 @@ export const fluffinessFormGroup = {
         return checkFluffinessValidity(this.getValue())
     },
 };
+
+
+
+// Hacky friends radio buttons
+
+const friendsYetYes = document.getElementById("friends-yet-yes");
+const friendsYetNo = document.getElementById("friends-yet-no");
+
+export const friendsFormGroup = {
+
+    feedback: document.getElementById('friends-feedback'),
+    getValue() {
+        if (this.input) {
+            return this.input.value;
+        }
+    },
+    getIssues() {
+        return checkFriendsValidity(this.getValue())
+    }
+}
+
+friendsYetYes.onchange = () => {
+    if (friendsYetYes.checked) {
+        friendsFormGroup.input = friendsYetYes;
+    }
+}
+
+friendsYetNo.onchange = () => {
+    if (friendsYetNo.checked) {
+        friendsFormGroup.input = friendsYetNo;
+    }
+}
+
 
 // Image
 
@@ -99,9 +133,6 @@ export const makeCardImageEl = (cat) => {
     }
 }
 
-
-// const friendsInputYes = document.getElementById("yes");
-// const friendsInputNo = document.getElementById("no");
 
 
 // Edit form variables
@@ -198,14 +229,16 @@ form.onsubmit = (event) => {
     let formElements = [catNameFormGroup, coatColourFormGroup, fluffinessFormGroup, imageFormGroup];
 
     formElements.forEach(displayValidity);
+    displayRadioValidity();
 
-    if (validateAll(formElements)) {
+
+    if (validateAll(formElements) && validate(friendsFormGroup)) {
         let newCat = {
             name: catNameFormGroup.getValue(),
             colour: coatColourFormGroup.getValue(),
             fluffiness: fluffinessFormGroup.getValue(),
             image: cardImage,
-            // friend: friendsInputYes.value,
+            friend: friendsFormGroup.getValue(),
         }
 
         retrieveCats();
@@ -217,25 +250,37 @@ form.onsubmit = (event) => {
         //     positive validation if you have successfully submitted)
 
         formElements.forEach(clearForm);
+        radioFeedback.style.display = "none";
         imagePreview.replaceChildren();
 
     }
 }
 
-// Get and validate the friend value I HAVE NOT DONE THIS YET
 
 // Display input validity
 export const displayValidity = (formGroup) => {
     let issues = formGroup.getIssues();
-    formGroup.input.classList.remove('is-valid,', 'is-invalid');
-    formGroup.input.classList.add(issues.length < 1 ? 'is-valid' : 'is-invalid');
-    formGroup.feedback.replaceChildren();
-    let issueElements = issues.map((issue) => {
-        let issueEl = document.createElement("small");
-        issueEl.textContent = issue;
-        return issueEl;
-    })
-    issueElements.forEach((el) => formGroup.feedback.appendChild(el));
+        formGroup.input.classList.remove('is-valid,', 'is-invalid');
+        formGroup.input.classList.add(issues.length < 1 ? 'is-valid' : 'is-invalid');
+        formGroup.feedback.replaceChildren();
+        let issueElements = issues.map((issue) => {
+            let issueEl = document.createElement("small");
+            issueEl.textContent = issue;
+            return issueEl;
+
+        })
+        issueElements.forEach((el) => formGroup.feedback.appendChild(el));
+
+}
+
+// Display radio button validity
+
+const radioFeedback = document.getElementById("radio-feedback");
+export const displayRadioValidity = () => {
+    if (friendsYetYes.checked === false && friendsYetNo.checked === false) {
+       radioFeedback.style.display = "block";
+       radioFeedback.textContent = "Are you friends yet or not?!"
+    }
 }
 
 // create and print the cat cards
@@ -262,6 +307,9 @@ export const printCats = () => {
         let catFluffiness = document.createElement("p");
         catFluffiness.textContent = "Fluffiness: " + cat.fluffiness;
         cardElArray.push(catFluffiness);
+        let catFriendsYet = document.createElement("p");
+        catFriendsYet.textContent = "Friends Yet?? " + cat.friend;
+        cardElArray.push(catFriendsYet);
 
         //  create edit button
         let editCatButton = document.createElement("button");
@@ -291,6 +339,8 @@ export const printCats = () => {
                 storeCats();
                 printCats();
                 editForm.style.display = "none";
+                clearForm(editImageFormGroup);
+
             }
 
 

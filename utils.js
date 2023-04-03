@@ -68,6 +68,15 @@ export const checkFluffinessValidity = (fluffiness) => {
     return issues;
 }
 
+export const checkFriendsValidity = (friends) => {
+    let issues = [];
+        if (isEmpty(friends)) {
+            issues.push("issue");
+    }
+        return issues;
+}
+
+
 // Image
 
 export const checkImageValidity = (image) => {
@@ -85,6 +94,5 @@ export const checkImageValidity = (image) => {
 export const clearForm = (formGroup) => {
     formGroup.input.value = "";
     formGroup.input.classList.remove("is-valid");
-
 
 }
