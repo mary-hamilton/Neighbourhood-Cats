@@ -1,4 +1,4 @@
-import {editCatNameFormGroup, editCoatColourFormGroup, editFluffinessFormGroup} from "./main.js";
+import {makeCardImageEl, editImagePreview, editCatNameFormGroup, editCoatColourFormGroup, editFluffinessFormGroup, editImageFormGroup} from "./main.js";
 
 export const addCatToEditForm = (catID, array) => {
 
@@ -6,5 +6,6 @@ export const addCatToEditForm = (catID, array) => {
     editCatNameFormGroup.input.value = catobj.name;
     editCoatColourFormGroup.input.value = catobj.colour;
     editFluffinessFormGroup.input.value = catobj.fluffiness;
+    editImagePreview.replaceChildren(makeCardImageEl(catobj));
 
 }

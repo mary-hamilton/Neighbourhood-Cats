@@ -14,7 +14,7 @@ export const outOfTen = (number) => {
 }
 
 export const under50kb = (file) => {
-    return file.size <= 50000;
+    return file.size <= 5000000;
 }
 
 
@@ -85,5 +85,6 @@ export const checkImageValidity = (image) => {
 export const clearForm = (formGroup) => {
     formGroup.input.value = "";
     formGroup.input.classList.remove("is-valid");
+
 
 }
