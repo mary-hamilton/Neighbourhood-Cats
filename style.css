@@ -31,3 +31,8 @@
 .card-image {
     width: 400px;
 }
+
+#radio-feedback {
+    display: none;
+    color: red;
+}

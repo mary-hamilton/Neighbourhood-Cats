@@ -10,32 +10,36 @@
 </head>
 <body>
 <div id="main">
-<form id="cat-creator" class="container">
+<form id="cat-creator" class="container requires-validation" novalidate>
     <div class="form-group">
-  <label for="cat-name">Name?</label>
+  <label for="cat-name" class="form-label">Name?</label>
   <input class="form-control" id="cat-name" type="text">
         <div class="invalid-feedback" id="name-feedback"></div>
     </div>
     <div class="form-group">
-  <label for="coat-colour">Coat colour?</label>
+  <label for="coat-colour" class="form-label">Coat colour?</label>
   <input class="form-control" id="coat-colour" type="text">
         <div class="invalid-feedback" id="colour-feedback"></div>
     </div>
     <div class="form-group">
-  <label for="fluffiness">Fluffiness (out of 10)</label>
+  <label for="fluffiness" class="form-label">Fluffiness (out of 10)</label>
   <input class="form-control" id="fluffiness" type="number">
         <div class="invalid-feedback" id="fluffiness-feedback"></div>
     </div>
-    <div class="form-group">
-    <p>Are you friends yet?</p>
-  <label for="yes">Yes</label>
-  <input  id="yes" type="radio" name="friends-yet">
-    <label for="no">No</label>
-    <input id="no" type="radio" name="friends-yet">
-        <div class="invalid-feedback" id="friends-feedback"></div>
+    <div>
+    <p>Are you friends yet??</p>
+        <div class="form-check form-check-inline">
+  <label class="form-check-label" for="friends-yet-yes">Yes!</label>
+  <input class="form-check-input" id="friends-yet-yes" value="Yes!" type="radio" name="friends-yet" required>
+        </div>
+        <div class="form-check form-check-inline">
+    <label class="form-check-label" for="friends-yet-no">No :(</label>
+    <input class="form-check-input"  id="friends-yet-no" value="No :(" type="radio" name="friends-yet" required>
+        </div>
+        <small id="radio-feedback"></small>
     </div>
     <div class="form-group">
-        <label for="image-input">Picture of your cat</label>
+        <label for="image-input" class="form-label">A picture of your cat?</label>
         <input class="form-control" type="file" id="image-input" accept="image/jpeg, image/png"/>
         <div class="invalid-feedback" id="image-feedback"></div>
         <div id="image-preview"></div>
