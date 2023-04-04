@@ -1,11 +1,21 @@
-import {makeCardImageEl, editImagePreview, editCatNameFormGroup, editCoatColourFormGroup, editFluffinessFormGroup, editImageFormGroup} from "./main.js";
+import {
 
-export const addCatToEditForm = (catID, array) => {
+    catNameFormGroup, coatColourFormGroup, fluffinessFormGroup, friendsYetNo, friendsYetYes,
 
-    let catobj = array.find((value) => value.name === catID);
-    editCatNameFormGroup.input.value = catobj.name;
-    editCoatColourFormGroup.input.value = catobj.colour;
-    editFluffinessFormGroup.input.value = catobj.fluffiness;
-    editImagePreview.replaceChildren(makeCardImageEl(catobj));
+} from "./main.js";
 
-}
+// export const addCatToEditForm = (catID, array) => {
+//
+//     let catobj = array.find((value) => value.name === catID);
+//     catNameFormGroup.input.value = catobj.name;
+//     coatColourFormGroup.input.value = catobj.colour;
+//     fluffinessFormGroup.input.value = catobj.fluffiness;
+//     // friendsYet = catobj.friend;
+//     catobj.friend === "Yes!" ? friendsYetYes.checked = true : friendsYetNo.checked = true;
+//
+//
+//     // if (catobj.image) {
+//     //     imagePreview.replaceChildren(makeCardImageEl(catobj))
+//     // }
+//
+// }

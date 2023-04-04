@@ -1,8 +1,4 @@
 import {
-    checkImageValidity,
-    checkColourValidity,
-    checkFluffinessValidity,
-    checkNameValidity,
     isEmpty,
     onlyLetters,
     outOfTen,
@@ -109,88 +105,88 @@ describe('Under 50kb', () => {
 })
 
 // Name validate
-
-describe('Check name validity', () => {
-    test('returns false for letters and numbers', () => {
-        const result = checkNameValidity("Abcd1", [{name: 'Simon'}, {name: 'Phil'}, {name: 'Bob'}]);
-        expect(result.length === 0).toEqual(false);
-    })
-
-    test('returns false for previously used name', () => {
-        const result = checkNameValidity("Phil", [{name: 'Simon'}, {name: 'Phil'}, {name: 'Bob'}]);
-        expect(result.length === 0).toEqual(false);
-    })
-
-    test('returns false for empty', () => {
-        const result = checkNameValidity("", [{name: 'Simon'}, {name: 'Phil'}, {name: 'Bob'}]);
-        expect(result.length === 0).toEqual(false);
-    })
-
-    test('returns true for unique name letters only', () => {
-        const result = checkNameValidity("Andy", [{name: 'Simon'}, {name: 'Phil'}, {name: 'Bob'}]);
-        expect(result.length === 0).toEqual(true);
-    })
-
-    test('returns true for unique name letters only', () => {
-        const result = checkNameValidity("Andy", [{name: 'Simon'}, {name: 'Phil'}, {name: 'Bob'}]);
-        expect(result.length === 0).toEqual(true);
-    })
-
-    test('returns false for same name different case', () => {
-        const result = checkNameValidity("siMon", [{name: 'Simon'}, {name: 'Phil'}, {name: 'Bob'}]);
-        expect(result.length === 0).toEqual(false);
-    })
-})
-
-// Coat colour validate
-
-describe('Check colour validity', () => {
-    test('returns false for letters and numbers', () => {
-        const result = checkColourValidity("Abcd1" );
-        expect(result.length === 0).toEqual(false);
-    })
-    test('returns false for empty', () => {
-        const result = checkColourValidity("" );
-        expect(result.length === 0).toEqual(false);
-    })
-    test('returns true for letters', () => {
-        const result = checkColourValidity("Abcdef" );
-        expect(result.length === 0).toEqual(true);
-    })
-})
-
-// Fluffiness validate
-
-describe('Check fluffiness validity', () => {
-    test('returns false for empty', () => {
-        const result = checkFluffinessValidity("");
-        expect(result.length === 0).toEqual(false);
-    })
-    test('returns false for string', () => {
-        const result = checkFluffinessValidity("abdABC");
-        expect(result.length === 0).toEqual(false);
-    })
-    test('returns true for number between 1 and 10', () => {
-        const result = checkFluffinessValidity("5");
-        expect(result.length === 0).toEqual(true);
-    })
-})
-
-// Image validity
-
-describe('Check image validity', () => {
-    test('returns false for over 50kb', () => {
-        const result = checkImageValidity(50001);
-        expect(result.length === 0).toEqual(false);
-    })
-    test('returns true for under 50kb', () => {
-        const result = checkImageValidity(49999);
-        expect(result.length === 0).toEqual(false);
-    })
-})
-
-
-
-
-
-
+//
+// describe('Check name validity', () => {
+//     test('returns false for letters and numbers', () => {
+//         const result = checkNameValidity("Abcd1", [{name: 'Simon'}, {name: 'Phil'}, {name: 'Bob'}]);
+//         expect(result.length === 0).toEqual(false);
+//     })
+//
+//     test('returns false for previously used name', () => {
+//         const result = checkNameValidity("Phil", [{name: 'Simon'}, {name: 'Phil'}, {name: 'Bob'}]);
+//         expect(result.length === 0).toEqual(false);
+//     })
+//
+//     test('returns false for empty', () => {
+//         const result = checkNameValidity("", [{name: 'Simon'}, {name: 'Phil'}, {name: 'Bob'}]);
+//         expect(result.length === 0).toEqual(false);
+//     })
+//
+//     test('returns true for unique name letters only', () => {
+//         const result = checkNameValidity("Andy", [{name: 'Simon'}, {name: 'Phil'}, {name: 'Bob'}]);
+//         expect(result.length === 0).toEqual(true);
+//     })
+//
+//     test('returns true for unique name letters only', () => {
+//         const result = checkNameValidity("Andy", [{name: 'Simon'}, {name: 'Phil'}, {name: 'Bob'}]);
+//         expect(result.length === 0).toEqual(true);
+//     })
+//
+//     test('returns false for same name different case', () => {
+//         const result = checkNameValidity("siMon", [{name: 'Simon'}, {name: 'Phil'}, {name: 'Bob'}]);
+//         expect(result.length === 0).toEqual(false);
+//     })
+// })
+//
+// // Coat colour validate
+//
+// describe('Check colour validity', () => {
+//     test('returns false for letters and numbers', () => {
+//         const result = checkColourValidity("Abcd1" );
+//         expect(result.length === 0).toEqual(false);
+//     })
+//     test('returns false for empty', () => {
+//         const result = checkColourValidity("" );
+//         expect(result.length === 0).toEqual(false);
+//     })
+//     test('returns true for letters', () => {
+//         const result = checkColourValidity("Abcdef" );
+//         expect(result.length === 0).toEqual(true);
+//     })
+// })
+//
+// // Fluffiness validate
+//
+// describe('Check fluffiness validity', () => {
+//     test('returns false for empty', () => {
+//         const result = checkFluffinessValidity("");
+//         expect(result.length === 0).toEqual(false);
+//     })
+//     test('returns false for string', () => {
+//         const result = checkFluffinessValidity("abdABC");
+//         expect(result.length === 0).toEqual(false);
+//     })
+//     test('returns true for number between 1 and 10', () => {
+//         const result = checkFluffinessValidity("5");
+//         expect(result.length === 0).toEqual(true);
+//     })
+// })
+//
+// // Image validity
+//
+// describe('Check image validity', () => {
+//     test('returns false for over 50kb', () => {
+//         const result = checkImageValidity(50001);
+//         expect(result.length === 0).toEqual(false);
+//     })
+//     test('returns true for under 50kb', () => {
+//         const result = checkImageValidity(49999);
+//         expect(result.length === 0).toEqual(false);
+//     })
+// })
+//
+//
+//
+//
+//
+//

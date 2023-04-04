@@ -1,18 +1,20 @@
 import './bootstrap.css';
 import './style.css';
-import {addCatToEditForm} from "./addCatToEditForm.js";
-import {editOriginalCat, setImageUrl} from "./editOriginalCat.js";
 import {
-    checkNameValidity,
     checkFluffinessValidity,
     checkColourValidity,
     checkImageValidity,
-    clearForm, checkFriendsValidity,
+    clearForm, isEmpty, onlyLetters
 } from "./utils.js";
 
 
+// Buttons
+
+const submitButton = document.getElementById("submit-button");
+
 // Form group variables
 
+const formHolder = document.getElementById("form-holder");
 const form = document.getElementById("cat-creator");
 
 // Cat name
@@ -23,7 +25,7 @@ export const catNameFormGroup = {
         return this.input.value
     },
     getIssues() {
-        return checkNameValidity(this.getValue(), catArray)
+        return checkNameValidity(this.getValue(), duplicateCheckArray)
     },
 };
 
@@ -55,34 +57,22 @@ export const fluffinessFormGroup = {
 
 // Hacky friends radio buttons
 
-const friendsYetYes = document.getElementById("friends-yet-yes");
-const friendsYetNo = document.getElementById("friends-yet-no");
+export const friendsYetYes = document.getElementById("friends-yet-yes");
+export const friendsYetNo = document.getElementById("friends-yet-no");
+let friendsYet;
 
-export const friendsFormGroup = {
-
-    feedback: document.getElementById('friends-feedback'),
-    getValue() {
-        if (this.input) {
-            return this.input.value;
-        }
-    },
-    getIssues() {
-        return checkFriendsValidity(this.getValue())
-    }
-}
 
 friendsYetYes.onchange = () => {
     if (friendsYetYes.checked) {
-        friendsFormGroup.input = friendsYetYes;
+        friendsYet = friendsYetYes.value;
     }
 }
 
 friendsYetNo.onchange = () => {
     if (friendsYetNo.checked) {
-        friendsFormGroup.input = friendsYetNo;
+        friendsYet = friendsYetNo.value;
     }
 }
-
 
 // Image
 
@@ -99,7 +89,7 @@ export const imageFormGroup = {
 
 // Image stuff
 
-const imagePreview = document.getElementById('image-preview');
+export const imagePreview = document.getElementById('image-preview');
 
 const reader = new FileReader();
 
@@ -133,93 +123,14 @@ export const makeCardImageEl = (cat) => {
     }
 }
 
-
-
-// Edit form variables
-
-const editForm = document.getElementById("cat-editor")
-
-// Edit cat name
-export const editCatNameFormGroup = {
-    input: document.getElementById('edit-cat-name'),
-    feedback: document.getElementById('edit-name-feedback'),
-    getValue() {
-        return this.input.value
-    },
-    getIssues() {
-        return checkNameValidity(this.getValue(), editingCatArray)
-    },
-};
-
-// edit cat colour
-export const editCoatColourFormGroup = {
-    input: document.getElementById('edit-coat-colour'),
-    feedback: document.getElementById('edit-colour-feedback'),
-    getValue() {
-        return this.input.value
-    },
-    getIssues() {
-        return checkColourValidity(this.getValue())
-    },
-};
-
-// edit cat fluffiness
-export const editFluffinessFormGroup = {
-    input: document.getElementById('edit-fluffiness'),
-    feedback: document.getElementById('edit-fluffiness-feedback'),
-    getValue() {
-        return this.input.value
-    },
-    getIssues() {
-        return checkFluffinessValidity(this.getValue())
-    },
-};
-// edit image
-export const editImageFormGroup = {
-    input: document.getElementById('edit-image-input'),
-    feedback: document.getElementById('edit-image-feedback'),
-    getValue() {
-        return this.input.files[0]
-    },
-    getIssues() {
-        return checkImageValidity(this.getValue())
-    },
-};
-
-// Edit image stuff
-
-export const editImagePreview = document.getElementById('edit-image-preview');
-
-const editReader = new FileReader();
-
-editReader.onload = () => {
-    const editReadImage = editReader.result;
-    if (editReadImage) {
-        const editPreviewEl = document.createElement('img');
-        editPreviewEl.setAttribute('src', editReadImage);
-        editPreviewEl.classList.add('preview');
-        editImagePreview.replaceChildren(editPreviewEl);
-        setImageUrl(editReadImage);
-    }
-}
-
-editImageFormGroup.input.onchange = () => {
-    editReader.readAsDataURL(editImageFormGroup.input.files[0]);
-}
-
-
-// Cancel edit button
-const cancelEditButton = document.getElementById("cancel-edit");
-
-// Submit Edit button
-const submitEditButton = document.getElementById("submit-edit");
-
 // Global modifiable variables
 
 let catArray = [];
-let editingCatArray = [];
 let catID;
 let cardImage;
+let editing = false;
+let newCat;
+let duplicateCheckArray = [];
 
 // submit the fucker
 
@@ -228,23 +139,34 @@ form.onsubmit = (event) => {
 
     let formElements = [catNameFormGroup, coatColourFormGroup, fluffinessFormGroup, imageFormGroup];
 
+    duplicateCheckArray = editing ? catArray.filter((value) => value.name !== catID) : catArray;
+
     formElements.forEach(displayValidity);
     displayRadioValidity();
 
+    if (validateAll(formElements) && friendsYet) {
 
-    if (validateAll(formElements) && validate(friendsFormGroup)) {
-        let newCat = {
-            name: catNameFormGroup.getValue(),
-            colour: coatColourFormGroup.getValue(),
-            fluffiness: fluffinessFormGroup.getValue(),
-            image: cardImage,
-            friend: friendsFormGroup.getValue(),
+        if (!editing) {
+
+            newCat = makeCat();
+            retrieveCats();
+            catArray.push(newCat);
+
         }
 
-        retrieveCats();
-        catArray.push(newCat);
+        if (editing) {
+
+            editOriginalCat(catID, catArray);
+            storeCats();
+            retrieveCats();
+            editing = false;
+            formHolder.classList.remove("editing");
+
+        }
+
         printCats();
         storeCats();
+        submitButton.textContent = "Submit";
 
         //     clear the inputs - also clears the positive validation bootstrap class (you don't need to see
         //     positive validation if you have successfully submitted)
@@ -283,6 +205,8 @@ export const displayRadioValidity = () => {
     }
 }
 
+
+
 // create and print the cat cards
 
 export const printCats = () => {
@@ -290,7 +214,10 @@ export const printCats = () => {
     catCardHolder.replaceChildren();
     let catCards = catArray.map((cat) => {
         let catEl = document.createElement("div");
-        catEl.classList.add("cat-cards");
+        catEl.classList.add("cat-cards", "card");
+        let catElBody = document.createElement("div");
+        catElBody.classList.add("card-body");
+        catEl.append(catElBody);
 
         let cardElArray = [];
 
@@ -313,51 +240,23 @@ export const printCats = () => {
 
         //  create edit button
         let editCatButton = document.createElement("button");
+        editCatButton.classList.add("btn", "btn-primary")
         editCatButton.textContent = "Edit Cat";
         editCatButton.onclick = () => {
-            editForm.style.display = "block";
+            editing = true;
+            formHolder.classList.add("editing");
             catID = cat.name
             addCatToEditForm(catID, catArray);
+            submitButton.textContent = "Edit This Cat";
+
         }
         cardElArray.push(editCatButton);
-
-        //  make it submittable
-        submitEditButton.onclick = (event) => {
-            event.preventDefault();
-
-            // validation stuff
-            // making an array without our current unique name so we can check against it without hitting any conflicts
-            editingCatArray = catArray.filter((value) => value.name !== catID);
-
-            let editFormElements = [editCatNameFormGroup, editCoatColourFormGroup, editFluffinessFormGroup, editImageFormGroup];
-
-            editFormElements.forEach(displayValidity);
-
-            if (validateAll(editFormElements)) {
-                // Editing the cat and the catArray
-                editOriginalCat(catID, catArray);
-                storeCats();
-                printCats();
-                editForm.style.display = "none";
-                clearForm(editImageFormGroup);
-
-            }
-
-
-        }
-          // cancel edit button
-
-        cancelEditButton.onclick = () => {
-            editForm.style.display = "none";
-            clearForm(editImageFormGroup);
-        }
-
-
 
 
         // delete button
 
         let deleteCatButton = document.createElement("button");
+        deleteCatButton.classList.add("btn", "btn-danger")
         deleteCatButton.textContent = "Delete Cat";
         deleteCatButton.onclick = () => {
             deleteCatButton.parentElement.remove();
@@ -368,7 +267,7 @@ export const printCats = () => {
 
         // building the cat card
 
-        cardElArray.forEach((bit) => catEl.append(bit));
+        cardElArray.forEach((bit) => catElBody.append(bit));
         return catEl;
     })
 
@@ -393,7 +292,8 @@ const retrieveCats = () => {
 // on page load
 
 retrieveCats();
-printCats()
+printCats();
+friendsYet = "";
 
 // delete all cats button
 const killAllCats = () => {
@@ -414,12 +314,69 @@ killAllCatsButton.onclick = () => {
 
 // Validation functions
 export const validate = (formGroup) => {
-    return formGroup.getIssues().length === 0;
+    return formGroup.getIssues().length === 0
 }
 export const validateAll = (array) => {
     return array.every((value) => validate(value));
 }
 
+// Name validation
+export const checkNameValidity = (catName) => {
+    const issues = [];
+    catName = catName.toLowerCase();
+    if (isEmpty(catName)) {
+        issues.push('Your cat must have a name!');
+        return issues;
+    }
 
+    if (duplicateCheckArray.filter((catObj) => catObj.name.toLowerCase() === catName).length !== 0) {
+        issues.push("Your cat cannot have the same name as a previously collected cat!");
 
+        return issues;
+    }
+
+    if (!onlyLetters(catName)) {
+        issues.push("You can only use letters in your cat's name :(")
+    }
+    console.log(issues)
+    return issues;
+}
+
+// Add cat to edit form
+const addCatToEditForm = (catID) => {
+    let catobj = catArray.find((value) => value.name === catID);
+    catNameFormGroup.input.value = catobj.name;
+    coatColourFormGroup.input.value = catobj.colour;
+    fluffinessFormGroup.input.value = catobj.fluffiness;
+    friendsYet = catobj.friend;
+    catobj.friend === "Yes!" ? friendsYetYes.checked = true : friendsYetNo.checked = true;
+    cardImage = catobj.image;
+    if (catobj.image) {
+        imagePreview.replaceChildren(makeCardImageEl(catobj))
+    }
+}
+
+// Make cat
+
+const makeCat = () => {
+    return {
+        name: catNameFormGroup.getValue(),
+        colour: coatColourFormGroup.getValue(),
+        fluffiness: fluffinessFormGroup.getValue(),
+        image: cardImage,
+        friend: friendsYet
+    }
+}
+
+// Edit cat
+
+const editOriginalCat = (catID, array) => {
+
+        console.log(array);
+        let catobj = array.find((value) => value.name === catID);
+        let position = array.indexOf(catobj);
+        catobj = makeCat();
+        array[position] = catobj;
+
+}
 
