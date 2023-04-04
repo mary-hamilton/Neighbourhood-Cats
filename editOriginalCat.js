@@ -1,17 +1,18 @@
-import {editCatNameFormGroup, editCoatColourFormGroup, editFluffinessFormGroup} from "./main.js";
+import {
+    catNameFormGroup,
+    coatColourFormGroup,
+    fluffinessFormGroup,
+    // cardImage,
+} from "./main.js";
 
 
-let editedImage;
 
-export const setImageUrl = (newImageUrl) => {
-    editedImage = newImageUrl;
-}
-
-export const editOriginalCat = (catID, array) => {
-    let catobj = array.find((value) => value.name === catID);
-    catobj.name = editCatNameFormGroup.input.value;
-    catobj.colour = editCoatColourFormGroup.input.value;
-    catobj.fluffiness = editFluffinessFormGroup.input.value;
-    catobj.image = editedImage;
-
-}
+// export const editOriginalCat = (catID, array) => {
+//
+//     console.log(array);
+//     let catobj = array.find((value) => value.name === catID);
+//
+//
+//
+//
+// }

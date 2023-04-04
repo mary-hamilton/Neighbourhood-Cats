@@ -14,30 +14,11 @@ export const outOfTen = (number) => {
 }
 
 export const under50kb = (file) => {
-    return file.size <= 5000000;
+    return file.size <= 50000;
 }
 
 
-// Name
-export const checkNameValidity = (catName, array) => {
-    const issues = [];
-    catName = catName.toLowerCase();
-    if (isEmpty(catName)) {
-        issues.push('Your cat must have a name!');
-        return issues;
-    }
 
-    if (array.filter((catObj) => catObj.name.toLowerCase() === catName).length !== 0) {
-        issues.push("Your cat cannot have the same name as a previously collected cat!");
-
-        return issues;
-    }
-
-    if (!onlyLetters(catName)) {
-        issues.push("You can only use letters in your cat's name :(")
-    }
-    return issues;
-}
 
 // Coat colour
 
@@ -50,6 +31,7 @@ export const checkColourValidity = (colour) => {
     if (!onlyLetters(colour)) {
         issues.push("Your colour must be a valid word")
     }
+    console.log(issues);
     return issues;
 }
 
@@ -65,16 +47,18 @@ export const checkFluffinessValidity = (fluffiness) => {
     if (!outOfTen(fluffiness)) {
         issues.push("Your fluffiness value must be out of 10!")
     }
+    console.log(issues);
     return issues;
 }
-
-export const checkFriendsValidity = (friends) => {
-    let issues = [];
-        if (isEmpty(friends)) {
-            issues.push("issue");
-    }
-        return issues;
-}
+//
+// export const checkFriendsValidity = (friends) => {
+//     let issues = [];
+//         if (isEmpty(friends)) {
+//             issues.push("issue");
+//     }
+//     console.log(issues);
+//         return issues;
+// }
 
 
 // Image
