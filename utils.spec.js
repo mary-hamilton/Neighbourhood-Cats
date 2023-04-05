@@ -83,22 +83,22 @@ describe('Out of ten', () => {
 // Under 50kb
 describe('Under 50kb', () => {
     test('returns false for over 50000', () => {
-        const result = under50kb("50001");
+        const result = under50kb(50001);
         expect(result).toEqual(false);
     })
 
     test('returns true for under 50000', () => {
-        const result = under50kb("49999");
+        const result = under50kb(49999);
         expect(result).toEqual(true);
     })
 
     test('returns true for 50000', () => {
-        const result = under50kb("50000");
+        const result = under50kb(50000);
         expect(result).toEqual(true);
     })
 
     test('returns false for negative number', () => {
-        const result = under50kb("-1");
+        const result = under50kb(-1);
         expect(result).toEqual(false);
     })
 

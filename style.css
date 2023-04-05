@@ -1,7 +1,36 @@
+html {
+    font-style: oblique;
+}
+
+main {
+    background-image: url("catBackground.jpeg")
+}
+
+
+
+#cat-creator {
+    background-color: #AEABA7;
+
+}
+
+.cat-cards {
+    background-color: #AEABA7;
+}
+ .title {
+     font-size: 5vh;
+     text-shadow: 3px 3px #CCC5B9;
+ }
+
+ .subtitle {
+     font-size: 2vh;
+ }
+
+
 .editing {
     position: fixed;
+    display: flex;
     z-index: 2;
-    background-color: rgba(220,220,220,0.7);
+    background-color: rgba(180,180,180,0.8);
     top: 0;
     bottom: 0;
     right: 0;
@@ -12,30 +41,46 @@
     min-width: 100vw;
 }
 
-
-.cat-cards {
-    border: 1px solid black;
-    border-radius: 20px;
-    padding: 20px;
-    margin: 20px;
+.editing #cat-creator {
+    background-color: rgba(180,180,180,1);
+    max-width: 65vmin;
 }
 
 
 .preview {
-    width: 200px;
-
+    max-width: 30vmin;
+    max-height: 25vmin;
+    margin: 10px 0 10px 0;
 }
 
-#image-preview {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.card-image {
-    width: 400px;
-}
 
 #radio-feedback {
     display: none;
     color: red;
+}
+
+#submit-button {
+    color: #252422;
+    background-color: rgb(235, 94, 40);
+    border: 1px solid rgb(235, 94, 40);
+}
+
+#kill-all-cats {
+    background-color: #403D39;
+    color: #CCC5B9;
+}
+
+.edit-button {
+    background-color: #F39E7C;
+    margin-right: 4px;
+}
+
+.delete-button {
+    color: #CCC5B9;
+    background-color: #403D39;
+}
+
+#cancel-edit {
+    color: #CCC5B9;
+    background-color: #403D39;
 }

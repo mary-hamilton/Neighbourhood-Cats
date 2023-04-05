@@ -9,10 +9,13 @@
     <title>Document</title>
 </head>
 <body>
-<main class="container d-flex flex-column min-vw-100 min-vh-100">
-<div id="form-holder" class="container d-flex flex-column">
-<form id="cat-creator" class="col-sm-4 requires-validation" novalidate>
-    <div class="form-group">
+
+<main class="container-fluid d-flex flex-column flex-md-row justify-content-center align-items-center align-items-md-start min-vw-100 min-vh-100">
+    <div id="form-holder" class="container d-flex flex-column col-xl-4 align-items-center">
+<form id="cat-creator" class="container justify-content-center col-12 border border-4 p-4 rounded m-5">
+    <p id="title" class="title">CAT COLLECTOR!</p>
+    <span id="subtitle" class="subtitle h4">For all your cat collecting needs</span><span id="cat-emoji" class="h1 cat-emoji">🐈</span>
+    <div class="form-group mt-3">
   <label for="cat-name" class="form-label">Name?</label>
   <input class="form-control" id="cat-name" type="text">
         <div class="invalid-feedback" id="name-feedback"></div>
@@ -28,7 +31,7 @@
         <div class="invalid-feedback" id="fluffiness-feedback"></div>
     </div>
     <div>
-    <p>Are you friends yet??</p>
+    <p>Are you friends yet?</p>
         <div class="form-check form-check-inline">
   <label class="form-check-label" for="friends-yet-yes">Yes!</label>
   <input class="form-check-input" id="friends-yet-yes" value="Yes!" type="radio" name="friends-yet">
@@ -45,11 +48,13 @@
         <div class="invalid-feedback" id="image-feedback"></div>
         <div id="image-preview"></div>
     </div>
-    <button id="submit-button" class="btn btn-primary" type="submit">Create Cat</button>
-    <button type="button" class="btn btn-danger" id="kill-all-cats">Kill All Your Cats</button>
+    <button id="submit-button" class="btn mt-2" type="submit">Create Cat</button>
+    <button type="button" class="btn mt-2" id="kill-all-cats">Kill All Your Cats :(</button>
+    <button type="button" class="btn mt-2" id="cancel-edit">Cancel Edit</button>
+
 </form>
 </div>
-<div class="container" id="cat-card-holder">
+<div class="container d-flex flex-wrap row p-md-3 m-3 mt-4" id="cat-card-holder">
 
 </div>
 

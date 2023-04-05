@@ -6,15 +6,15 @@ export const isEmpty = (value) => {
 }
 
 export const onlyLetters = (word) => {
-    return /^[a-zA-Z]+$/.test(word);
+    return /^[a-zA-Z][a-zA-Z ]+$/.test(word);
 }
 
 export const outOfTen = (number) => {
     return number >= 0 && number <= 10;
 }
 
-export const under50kb = (file) => {
-    return file.size <= 50000;
+export const under50kb = (filesize) => {
+    return filesize <= 50000 && filesize > 0;
 }
 
 
@@ -50,23 +50,13 @@ export const checkFluffinessValidity = (fluffiness) => {
     console.log(issues);
     return issues;
 }
-//
-// export const checkFriendsValidity = (friends) => {
-//     let issues = [];
-//         if (isEmpty(friends)) {
-//             issues.push("issue");
-//     }
-//     console.log(issues);
-//         return issues;
-// }
-
 
 // Image
 
 export const checkImageValidity = (image) => {
     let issues = [];
     if(image) {
-        if (!under50kb(image)) {
+        if (!under50kb(image.size)) {
             issues.push("Your image is too large!")
         }
     }
